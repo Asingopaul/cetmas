@@ -71,7 +71,8 @@
       margin-bottom: 20px;
     }
 
-    .register-box input, .register-box select {
+    .register-box input,
+    .register-box select {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
@@ -88,8 +89,15 @@
     .show-password {
       display: flex;
       align-items: center;
-      gap: 5px;
-      margin: 5px 0;
+      margin-top: -5px;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    .show-password input[type="checkbox"] {
+      margin: 0;
+      margin-right: 6px;
     }
 
     .password-rules {
@@ -137,9 +145,10 @@
   <header>
     <div class="logo">Comfeex Enterprises</div>
     <nav>
-      <a href="#">Products</a>
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('products') }}">Products</a>
       <a href="#">Cart</a>
-      <a href="#">Contact Us</a>
+      <a href="{{ url_for('Contact') }}">Contact Us</a>
       <a href="/login">Login</a>
       <div class="profile-icon">P</div>
     </nav>
@@ -158,40 +167,41 @@
     <input type="email" name="email" required>
 
     <label>Country *</label>
-    <select name="country" required>
-      <option value="">Select Country</option>
-      <option value="Kenya">Kenya</option>
-      <option value="Uganda">Uganda</option>
-      <option value="Tanzania">Tanzania</option>
+    <select name="country" required onchange="loadCounties(this.value)">
+      <option value="Kenya" selected>Kenya</option>
     </select>
 
     <label>County *</label>
-    <select name="county" required>
+    <select name="county" id="county" required onchange="loadTowns(this.value)">
       <option value="">Select County</option>
-      <option value="Nairobi">Nairobi</option>
-      <option value="Machakos">Machakos</option>
-      <option value="Kisumu">Kisumu</option>
     </select>
 
     <label>City / Town *</label>
-    <input type="text" name="city" required>
+    <select name="city" id="town" required>
+      <option value="">Select Town</option>
+    </select>
 
     <label>Phone Number *</label>
     <div style="display: flex; gap: 10px;">
       <select name="code" required style="width: 100px;">
         <option value="+254">+254</option>
-        <option value="+256">+256</option>
       </select>
       <input type="tel" name="phone" required placeholder="7XXXXXXXX">
     </div>
 
     <label>Create Password *</label>
     <input type="password" id="password" name="password" oninput="validatePassword()" required>
-    <div class="show-password"><input type="checkbox" onclick="togglePassword('password')"> Show Password</div>
+    <div class="show-password">
+      <input type="checkbox" id="showPass1" onclick="togglePassword('password')">
+      <label for="showPass1">Show Password</label>
+    </div>
 
     <label>Confirm Password *</label>
     <input type="password" id="confirm_password" name="confirm_password" required>
-    <div class="show-password"><input type="checkbox" onclick="togglePassword('confirm_password')"> Show Password</div>
+    <div class="show-password">
+      <input type="checkbox" id="showPass2" onclick="togglePassword('confirm_password')">
+      <label for="showPass2">Show Password</label>
+    </div>
 
     <div id="rules" class="password-rules">
       <p id="rule1">❌ At least one uppercase letter</p>
@@ -205,7 +215,7 @@
   </form>
 
   <footer>
-    &copy;copyright comfeex enterprises 2025
+    &copy; copyright comfeex enterprises 2025
   </footer>
 
   <script>
@@ -235,6 +245,37 @@
         }
       });
     }
+
+    const kenyaData = {
+      "Nairobi": ["Westlands", "Kibra", "Embakasi", "Lang'ata", "Kasarani"],
+      "Mombasa": ["Mvita", "Changamwe", "Likoni", "Kisauni", "Nyali"],
+      "Kiambu": ["Thika", "Ruiru", "Limuru", "Githunguri", "Kabete"],
+      "Kisumu": ["Kisumu Central", "Kisumu East", "Muhoroni", "Nyando", "Seme"],
+      "Nakuru": ["Naivasha", "Nakuru Town", "Gilgil", "Subukia", "Molo"],
+      "Machakos": ["Machakos Town", "Kangundo", "Mwala", "Masinga", "Kathiani"]
+    };
+
+    function loadCounties() {
+      const countySelect = document.getElementById('county');
+      countySelect.innerHTML = `<option value="">Select County</option>`;
+      for (const county in kenyaData) {
+        countySelect.innerHTML += `<option value="${county}">${county}</option>`;
+      }
+    }
+
+    function loadTowns(county) {
+      const townSelect = document.getElementById('town');
+      townSelect.innerHTML = `<option value="">Select Town</option>`;
+      if (kenyaData[county]) {
+        kenyaData[county].forEach(town => {
+          townSelect.innerHTML += `<option value="${town}">${town}</option>`;
+        });
+      }
+    }
+
+    window.onload = function () {
+      loadCounties();
+    };
   </script>
 </body>
 </html>
